@@ -394,7 +394,13 @@ const swap=()=>{if(ep(location.hash)!==window.EPIC)location.reload()};
 addEventListener("hashchange",swap,true);addEventListener("popstate",swap,true);
 const mark=()=>{const sw=document.querySelector(".epicswitch");if(!sw)return;const both=sw.querySelector('[data-epic="both"]');
  both.href=window.EPIC==="ram"?"#ram.epics":"#epics";
- sw.querySelectorAll("a").forEach(x=>{if(x.dataset.epic===window.EPIC)x.setAttribute("aria-current","page");else x.removeAttribute("aria-current")})};
+ const cur=/epics$/.test(location.hash)?"both":window.EPIC;
+ sw.querySelectorAll("a").forEach(x=>{if(x.dataset.epic===cur)x.setAttribute("aria-current","page");else x.removeAttribute("aria-current")})};
+// "Two epics" opens a panel far below the masthead: bring it into view, or a tap looks like it did nothing
+const toPanel=()=>{const p=document.querySelector("#panel");if(p&&!p.hidden)p.scrollIntoView({behavior:"smooth",block:"start"})};
+document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest(".epicswitch a");setTimeout(mark,60);if(a&&a.dataset.epic==="both")setTimeout(toPanel,150)});
+addEventListener("hashchange",()=>setTimeout(mark,60));
+addEventListener("load",()=>{if(/epics$/.test(location.hash))setTimeout(toPanel,200)});
 document.readyState==="loading"?document.addEventListener("DOMContentLoaded",mark):mark();})();
 </script>
 <script>if(window.EPIC==="mbh")(function(){
